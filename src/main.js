@@ -1,56 +1,52 @@
 "use strict";
-var g = hexi(512, 512, setup);
+var g = hexi(500, 520, setup);
 g.scaleToWindow();
-var ball = undefined;
+g.backgroundColor = 'grey';
+// globals
+let physics = new Array();
+var Engine = Matter.Engine,
+    World = Matter.World,
+    Bodies = Matter.Bodies,
+    Runner = Matter.Runner;
+var engine = Engine.create({
+      render: {
+          element: document.body,
+          controller: Matter.RenderPixi
+      }
+});
+var runner = Runner.create();  
 g.start();
 
-//The `setup` function to initialize your application
+
 function setup() {
-
-  //Make a ball sprite.
-  //circle arguments: diameter, fillStyle, strokeStyle, lineWidth, x, y
-  ball = g.circle(64, "powderBlue", "black", 2, 192, 256);
-
-  //Set the ball's velocity to 0
-  ball.vx = g.randomInt(5, 15);
-  ball.vy = g.randomInt(5, 15);
-
-  //Physics properties
-  ball.gravity = 0.3;
-  ball.frictionX = 1;
-  ball.frictionY = 0;
-  ball.mass = 1.3;
-
-  //Acceleration and friction properties
-  ball.accelerationX = 0.2;
-  ball.accelerationY = -0.2;
-  ball.frictionX = 1;
-  ball.frictionY = 1;
+  var platform = physicsSprite(g.canvas.width/2, g.canvas.height, 100, 120, "white", 0.5);
+  platform.body.isStatic = true;
+  console.log(platform.sprite.x);
+  physics.push(platform);
+  World.add(engine.world, [platform.body]);
+  
+  var spawner = g.rectangle(100, 20, "white");
+  spawner.pivotX = spawner.pivotY = 0.5;
+  spawner.x = g.canvas.width/2;
 
   g.pointer.tap = function () {
-    ball.x = g.pointer.x - ball.halfWidth;
-    ball.y = g.pointer.y - ball.halfHeight;
-    ball.vx = g.randomInt(-15, 15);
-    ball.vy = g.randomInt(-15, 15);
+    var block = physicsSprite(spawner.x, spawner.y, 20, 20, "green", 0.5);
+    World.add(engine.world, [block.body]);
+    physics.push(block);
   };
-
-  var message = g.text("Tap to give the ball a new random velocity", "18px Futura", "black", 6, 6);
   g.state = play;
 }
 
+
 function play() {
-
-  ball.vy += ball.gravity;
-  ball.vx *= ball.frictionX;
-  ball.x += ball.vx;
-  ball.y += ball.vy;
-
-  var collision = g.contain(ball, g.stage, true);
-  if (collision) {
-    if (collision.has("bottom")) {
-      ball.frictionX = 0.98;
-    } else {
-      ball.frictionX = 1;
-    }
-  }
+  
+  physics.forEach(element => {
+    let body = element.body;
+    let sprite = element.sprite;
+    sprite.x = body.position.x;
+    sprite.y = body.position.y;
+    sprite.rotation = body.angle;
+  });
+  
+  Runner.tick(runner, engine, 1000/60);
 }

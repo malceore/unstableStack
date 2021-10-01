@@ -2,3 +2,26 @@ Theme: Unstable
 Make a Tricky Towers clone?
 Need to build as high as possible, generates a score?
 	Shapes could be randomly generated...
+Will need physics that I don't believe hexi.js has..
+Looks like we can possibly combine matterJS based on this issue
+https://github.com/kittykatattack/hexi/issues/44
+
+Let's try.
+Maybe make it so the darker the tone the more dense the block?
+	Can easily manipulate mass
+Should make an object that combines a sprite with a body and
+	changes tint based on mass given.
+physicsSprite(x, y, width, height, mass);
+Maybe make it control with mouse?
+Get 7 blocks stacked and the eighth can be made static.
+	Activated with shift?
+
+Todo:
+\- 1. Need a square and a button that spawns squares.
+\- 2. Physics for the squares to stack on the platform.
+
+
+Next we'll need an object for creating
+Then we'll work on a few different tetris style pieces that inherit
+Finally we'll get some horiviontial and vertical movement of' current block
+	This will have to be done by moving the physics body.
