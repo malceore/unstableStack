@@ -20,33 +20,28 @@ function physicsSpriteVerts(x, y, verts, texture, color, mass){
 
   let body = Matter.Bodies.fromVertices(x, y, verts);
   //body.mass = mass;
-  body.mass = 0.2;
+  body.mass = 0.9;
   body.friction = 1;
   body.frictionair = 0.8;
   body.frictionStatic = 1;
-  /*
-  // Correction for bodies here:
-  /// https://github.com/liabru/matter-js/issues/211
-  body.position.x = body.bounds.min.x;
-  body.position.y = body.bounds.min.y;
-  body.positionPrev.x = body.bounds.min.x;
-  body.positionPrev.y = body.bounds.min.y; 
- let sprite = g.rectangle(10, 10, "white");
- // Draw out the lines for each complex shape.
- verts.forEach(function(element, i){
-   let line;
-   // Send it back home if it's done!
-   if(i == verts.length-1){
-     line = g.line("black", lineWidth, element.x, element.y, verts[0].x, verts[0].y);
-   } else {
-     line = g.line("black", 1, element.x, element.y, verts[i+1].x, verts[i+1].y);
-   }
-   sprite.addChild(line);
- });
- */
-  //let sprite = g.rectangle(10, 10, "white");
+
+  var polys = new Array();
+  verts.forEach(function(element, i){
+    polys.push(element.x, element.y);
+  });
+  var ge = new PIXI.Graphics();
+  ge.beginFill("white");
+  ge.drawPolygon(polys);
+  ge.endFill();
+
   let sprite = g.sprite(texture);
+
+  sprite.addChild(ge);
+  ge.x -= sprite.width/2;
+  ge.y -= sprite.height/2;
   sprite.setPivot(0.5, 0.5);
+  //Start it off screen until used..
+  sprite.position.x = -500;
 
   return { 
     "body": body, 
@@ -127,4 +122,13 @@ function createPlatform(){
   var platform = physicsSprite(g.canvas.width/2, g.canvas.height, 5*blockSize, 6*blockSize, "white", 50.5);
   platform.body.isStatic = true;
   return platform;
+}
+
+function createSpawner(){
+  var spawner = g.rectangle(100, 20, "white");
+  spawner.pivotX = spawner.pivotY = 0.5;
+  spawner.x = g.canvas.width/2;
+  spawner.y = -35;
+  spawner.visible = false;
+  return spawner;
 }

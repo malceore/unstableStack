@@ -20,8 +20,23 @@ Get 7 blocks stacked and the eighth can be made static.
 Dude checkout this pinball demo!
 https://codersblock.com/blog/javascript-physics-with-matter-js/
 
-
 Found a bug where if block is touching platform or blocks it's counted twice!
+
+Make it so when blocks fall past the point of no return it causes quaking and explosion sounds!
+Need some background graphics, maybe one that scrolls very slowly but is very long?
+
+Tomorrow will be focused on adding lots of animationa nd sounds to make things more appealing.
+Extending/repairing hexi tweens so we can easily enable/disable them would be a boon.
+
+Also menu and such tomorrow. Should be easy to insert it with some random blocks 
+that rain in the background.
+Will need a bit menu graphic.
+
+Maybe we should make the score about the overall height using the towers average height like we had?
+
+What about other block types? Round, wedge, extra large?
+Could add some random events that would be fun, like wind and 
+
 
 Todo:
 \- Need a square and a button that spawns squares.
@@ -41,12 +56,14 @@ After that we'll want the camera to track the center of the blocks
 		We'll need a list of active blocks then, those that have not fallen off.
 	Active blocks are touching the platform OR another block that is touching the platform.
 
-Next we'll make the choice menu that will give you two blocks to choose from.
+\- Next we'll make the choice menu that will give you two blocks to choose from.
 \- Then we'll get a score going for each block.
 \- Then we'll take blocks that are well off screen and make them static.
-Then a combo meter that lets you place a static block.
+\- Then a combo meter that lets you place a static block.
+\- Need to make it so you can gain and lose points towards static next.
+Then we need to make it so you get points for static objects as well.
+	Refactor it so the initla loop checks all 'static' bodies, not just platform.
+Then let's add a main menu that we can easily disable for troubleshooting.
 
 
-Then we'll come back and polish the game, menu, clean up, new game, etc.
-Then we'll come back and add graphics, challenges, story and context.
-Don't forget about sound!
+

@@ -1,5 +1,5 @@
 "use strict";
-let resources = [
+const resources = [
   "res/images/LBlock.png",
   "res/images/lineBlock.png",
   "res/images/SBlock.png",
@@ -8,32 +8,23 @@ let resources = [
 var g = hexi(500, 520, setup, resources, load);
 g.scaleToWindow();
 g.backgroundColor = 'grey';
-
 // globals
 let physics = new Array();
 var Engine = Matter.Engine,
     World = Matter.World,
     Bodies = Matter.Bodies,
     Runner = Matter.Runner;
-var engine = Engine.create({
-      render: {
-          element: document.body,
-          controller: Matter.RenderPixi
-      }
-});
+var engine = Engine.create({render: { element: document.body,controller: Matter.RenderPixi}});
 var runner = Runner.create();  
-var spawner = g.rectangle(100, 20, "white");
+var spawner = createSpawner();
 var platform = createPlatform();
+var staticChargeBar = createStaticChargeBar();
 var towerCenter = {'x':0, 'y':0};
-var scoreText;
+var choiceMenu;
+var blockDampening = 6;
 let stackedBlocks = new Array();
+var score = createScore();
 var currentBlock = {};
-let possibleBlocks = [
-  () => { return linePiece(spawner.x, spawner.y, "green", 1.5)},
-  () => { return LPiece(spawner.x, spawner.y, "green", 1.5)},
-  () => { return squarePiece(spawner.x, spawner.y, "green", 1.5)},
-  () => { return SPiece(spawner.x, spawner.y, "green", 1.5)}
-];
 g.start();
 
 function load() {
@@ -43,26 +34,12 @@ function load() {
 }
 
 function setup() {
-  spawner.pivotX = spawner.pivotY = 0.5;
-  spawner.x = g.canvas.width/2;
-
   physics.push(platform);
   World.add(engine.world, [platform.body]);
-
-  scoreText = g.text("Score: ", "18px puzzler", "white");
-  //blockCount = g.text("Blocks: ", "18px puzzler", "white");
-
-  engine.world.gravity.y = 0.2;
-  console.log(engine.world.gravity.y);
-
-  g.pointer.tap = function () {
-    var block = possibleBlocks[g.randomInt(0, possibleBlocks.length-1)]();
-    currentBlock = block;
-    World.add(engine.world, [block.body]);
-    physics.push(block);
-  };
-
+  engine.world.gravity.y = 0.09;
+  choiceMenu = choiceMenu();
   initKeyboard();
+  helpMenu();
   g.state = play;
 }
 
@@ -76,7 +53,6 @@ function updateStackedBlocks(){
     // Need to skip index #1 which is platform otherwise everything will be off.
     if(platformCollided && value != 0){
       blocks.push(element);
-      //console.log("platform touching.");
     }
   });
 
@@ -84,11 +60,18 @@ function updateStackedBlocks(){
     // Need to skip index #1 which is platform otherwise everything will be off.
     if (collidesWithBlockList(element, blocks) && value != 0){
       blocks.push(element);
-      //console.log("block touching.");
     }
   });
 
-  stackedBlocks = blocks;
+  if (!checkArraysEqual(stackedBlocks, blocks)){
+    // If the count of stacked blocks went up lets add to our combo meter.
+    if(stackedBlocks.length < blocks.length){
+      staticChargeBar.add();
+    }
+    stackedBlocks = blocks;
+    return true;
+  }
+  return false;
 }
 
 
@@ -105,7 +88,6 @@ function collidesWithBlockList(block, list){
 function updateTowerCenter(){
   let avgX = 0;
   let avgY = 0;
-
   // Accumulate and generate averages.
   stackedBlocks.forEach(function (element, value) {
     avgX += element.sprite.x;
@@ -113,9 +95,7 @@ function updateTowerCenter(){
   });
   avgX = Math.floor(avgX / stackedBlocks.length);
   avgY = Math.floor(avgY / stackedBlocks.length);
-
   towerCenter = {'x': avgX, 'y': avgY};
-  
 }
 
 
@@ -124,10 +104,13 @@ function pruneDisqualifiedBlocks(){
   // If physics object has fallen too far below then we'll stop updating it.
   physics.forEach(function (element, value) {
     // Need to skip index #1 which is platform otherwise everything will be off.
-    if (element.sprite.y > platform.sprite.y + 50 && value != 0){
+    if (element.sprite.y > platform.sprite.y + 1500 && value != 0){
       World.remove(engine.world, [element.body]);
       purgeList.push(element);
-      //console.log("block removed")
+    }
+     // If blocks fell of let's sour the combo.
+    if (element.sprite.y > platform.sprite.y + 100 && value != 0){
+      staticChargeBar.remove();
     }
   });
   physics = removeArrayElements(purgeList, physics);
@@ -135,37 +118,29 @@ function pruneDisqualifiedBlocks(){
 
 
 function updatePhysicsSprites(){
-  physics.forEach(element => {
+  physics.forEach(function(element, value) {
     let body = element.body;
     let sprite = element.sprite;
     sprite.x = body.position.x;
     sprite.y = body.position.y;
     sprite.rotation = body.angle;
-  });
-}
 
-
-function updateScore(){
-  scoreText.text = "Score " + Math.max((stackedBlocks.length - 1) * 100, 0);
-}
-
-// Given a list of elements to be removed and the array to remove them from, returns cleaned array.
-function removeArrayElements(list, array){
-  let replacementArray = new Array();
-  array.forEach(element => {
-    if(list.indexOf(element) === -1){
-      replacementArray.push(element);
+    // Apply dampening to make very bottom blocks static.
+    if(stackedBlocks.length >= blockDampening && (stackedBlocks.length - blockDampening) > value){
+      body.isStatic = true;
     }
   });
-  return replacementArray;
 }
 
 
 function play() {
   updatePhysicsSprites();
-  updateStackedBlocks();
-  updateTowerCenter();
-  updateScore();
-  pruneDisqualifiedBlocks();
+  let changed = updateStackedBlocks();
+  // Only run other updates if things got changed. Save some cycles.
+  if (changed){
+    updateTowerCenter();
+    score.update();
+    pruneDisqualifiedBlocks();
+  }
   Runner.tick(runner, engine, 1000/60);
 }
