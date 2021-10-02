@@ -21,6 +21,7 @@ Dude checkout this pinball demo!
 https://codersblock.com/blog/javascript-physics-with-matter-js/
 
 
+Found a bug where if block is touching platform or blocks it's counted twice!
 
 Todo:
 \- Need a square and a button that spawns squares.
@@ -32,13 +33,20 @@ Fuck I'm stuck. MY pixi container is upper left pivot and Matterjs you
 cannot change that or it changes the weight dist also..
 Need to find a solution for this, fix physics so things stay together more, more stable.
 
-Finally we'll get some horiviontial and vertical movement of' current block
+\- Finally we'll get some horiviontial and vertical movement of' current block
 	This will have to be done by moving the physics body.
+Need to get better stacking first.
 After that we'll want the camera to track the center of the blocks
+	To do this we'll first determine where the center of the tower is.
+		We'll need a list of active blocks then, those that have not fallen off.
+	Active blocks are touching the platform OR another block that is touching the platform.
+
 Next we'll make the choice menu that will give you two blocks to choose from.
-Then we'll get a score going for each block.
-Then we'll take blocks that are well off screen and make them static.
+\- Then we'll get a score going for each block.
+\- Then we'll take blocks that are well off screen and make them static.
 Then a combo meter that lets you place a static block.
+
+
 Then we'll come back and polish the game, menu, clean up, new game, etc.
 Then we'll come back and add graphics, challenges, story and context.
 Don't forget about sound!
