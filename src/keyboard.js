@@ -16,7 +16,7 @@ function initKeyboard(){
       cameraDown = g.keyboard(40),
       useStatic = g.keyboard(32);
 
-
+  // Combo power button.
   useStatic.press = () => {
     if (staticChargeBar.staticCurrent >= staticChargeBar.staticThreshold) {
       currentBlock.body.isStatic = true;
@@ -24,6 +24,7 @@ function initKeyboard(){
       staticChargeBar.reset();
     }
   };
+
 
   // Block spawning controls.
   spawnRight.press = () => {

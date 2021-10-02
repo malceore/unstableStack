@@ -20,6 +20,9 @@ var spawner = createSpawner();
 var platform = createPlatform();
 var staticChargeBar = createStaticChargeBar();
 var towerCenter = {'x':0, 'y':0};
+var towerCenterLine = g.line("blue", 2, 0, -platform.sprite.height/2, g.canvas.width, -platform.sprite.height/2);
+var goalLine = g.line("red", 2, 0, -400, g.canvas.width, -400);
+
 var choiceMenu;
 var blockDampening = 6;
 let stackedBlocks = new Array();
@@ -34,12 +37,18 @@ function load() {
 }
 
 function setup() {
+  towerCenterLine.x -= platform.sprite.x - (platform.sprite.width/2);
+  platform.sprite.addChild(towerCenterLine);
+  goalLine.x -= platform.sprite.x - (platform.sprite.width/2);
+  goalLine.alpha = towerCenterLine.alpha = 0.2;
+  platform.sprite.addChild(goalLine);
   physics.push(platform);
   World.add(engine.world, [platform.body]);
   engine.world.gravity.y = 0.09;
   choiceMenu = choiceMenu();
   initKeyboard();
   helpMenu();
+  //winnerMenu();
   g.state = play;
 }
 
@@ -55,6 +64,20 @@ function updateStackedBlocks(){
       blocks.push(element);
     }
   });
+/*
+  // Is it colliding with something static?
+  physics.forEach(function (element, value) {
+    physics.forEach(function (staticElement, staticValue) {
+      if(staticElement.body.isStatic){
+        if (value != 0 && value != staticValue){
+          if(Matter.SAT.collides(element.body, staticElement.body).collided){
+            blocks.push(element);
+            //console.log("made it");
+          }
+        }
+      }
+    });
+  });*/
 
   physics.forEach(function (element, value) {
     // Need to skip index #1 which is platform otherwise everything will be off.
@@ -96,6 +119,11 @@ function updateTowerCenter(){
   avgX = Math.floor(avgX / stackedBlocks.length);
   avgY = Math.floor(avgY / stackedBlocks.length);
   towerCenter = {'x': avgX, 'y': avgY};
+
+  // Update the line position.
+  var normalizedY = Math.abs(avgY - (platform.sprite.y + platform.sprite.height));
+  towerCenterLine.ay = -normalizedY;
+  towerCenterLine.by = -normalizedY;
 }
 
 
@@ -133,6 +161,19 @@ function updatePhysicsSprites(){
 }
 
 
+function checkWinConditions(){
+  stackedBlocks.forEach(function(element) {
+    //console.log(element.sprite.y, goalLine.ay + platform.sprite.y);
+    // Off set from platform needs to be applied and sprite's height to be accurate.
+    if (element.sprite.y - (element.sprite.height/2) <= goalLine.ay + platform.sprite.y){
+      //console.log("you are winrar!");
+      winnerMenu();
+      g.pause();
+    }
+  });
+}
+
+
 function play() {
   updatePhysicsSprites();
   let changed = updateStackedBlocks();
@@ -141,6 +182,7 @@ function play() {
     updateTowerCenter();
     score.update();
     pruneDisqualifiedBlocks();
+    checkWinConditions();
   }
   Runner.tick(runner, engine, 1000/60);
 }

@@ -53,15 +53,20 @@ function helpMenu(){
 
   const helpText = `
   How to:
-  * Stack blocks to gain points. 
+  * Stack blocks to reach the red line and 
+  you win! 
   * C and V let you select your next block.
   * WASD let you right current block.
   * QE to rotate current block.
   * Arrow keys let you move the camera up 
   and down the tower.
+  * When the bar is filled you can make any 
+  block stick where you want using space.
+
   `;
   var menu = g.rectangle(350, 200, menuColor, "black", menuLineWidth, 0, 0);
   var text = g.text(helpText, "18px puzzler", "black");
+  text.y = -21;
   menu.addChild(text);
 
   var tag = g.rectangle(42, 25, menuColor, "black", menuLineWidth, 0, menu.height);
@@ -92,7 +97,9 @@ function createScore(){
   text.x = 5;
   text.y = 25;
   text.update = () => {
-    text.text = "Score " + Math.max((stackedBlocks.length - 1) * 100, 0);
+    //text.text = "Score " + Math.max((stackedBlocks.length - 1) * 100, 0);
+    var baseScore = Math.abs(towerCenter.y - platform.sprite.y);
+    text.text = "Score " + Math.max(baseScore * 10, 0);
   }
   return text;
 }
@@ -105,14 +112,11 @@ function createStaticChargeBar(){
   container.barFill = barFill;
   container.x = 2;
   container.y = 2
-
   container.staticThreshold = 8;
   container.staticCurrent = 1;
-
   container.update = () => {
     container.barFill.width = 20 * container.staticCurrent;
   }
-
   container.add = () => {
     // Above threhold don'tupdate any further.
     if (container.staticThreshold > container.staticCurrent){
@@ -120,7 +124,6 @@ function createStaticChargeBar(){
       container.update();
     }
   }
-
   container.remove = () => {
     // If it would go negative don't do anything.
     if (container.staticCurrent != 0){
@@ -128,12 +131,42 @@ function createStaticChargeBar(){
       container.update();
     }
   }
-
   container.reset = () => {
     container.staticCurrent=0;
     container.update();
   }
 
   return container;
+}
 
+
+function winnerMenu(){
+  var menu = g.rectangle(350, 200, menuColor, "black", menuLineWidth, 0, 0);
+  var menuText = g.text("You won!", "48px puzzler", "black");
+  menuText.x = 50;
+  menuText.y = 10;
+  menu.addChild(menuText);
+
+  var close = g.rectangle(50, 30, menuColor, "black", 10, 0, 0);
+  // Later this will be return to menu!
+  var closeText = g.text("Close", "28px puzzler", "black");
+  close.addChild(closeText);
+  close.setPivot(0.5);
+  close.x = 100;
+  close.y = 130;
+
+  closeText.interact = true;
+  closeText.tap = () => {
+    container.x += 5000;
+    close.interact = false;
+    g.remove(container);
+    //g.resume();
+  }
+
+  var finalScore = g.text("Final " + score.text, "28px puzzler", "black");
+  finalScore.x = 100;
+  finalScore.y = 80;
+
+  var container = g.group(menu, close, finalScore);
+  g.stage.putCenter(container);
 }

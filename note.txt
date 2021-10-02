@@ -37,6 +37,16 @@ Maybe we should make the score about the overall height using the towers average
 What about other block types? Round, wedge, extra large?
 Could add some random events that would be fun, like wind and 
 
+On initial have it show yuo to goal and then scroll down
+Also have help menu activate to show you how to play.
+
+do we have time to make 3 levels for this?
+	I'm thinking like 3 of varying heights, second two have extra obstecaltes?
+	Like some swinging rope things
+	Birds?
+
+How could we make it shake when you drop things?
+
 
 Todo:
 \- Need a square and a button that spawns squares.

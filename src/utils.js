@@ -3,9 +3,9 @@
 function getRandomBlock(){
   let possibleBlocks = [
     () => { return linePiece(spawner.x, spawner.y, "green", 1.5)},
-    () => { return LPiece(spawner.x, spawner.y, "green", 1.5)},
+    //() => { return LPiece(spawner.x, spawner.y, "green", 1.5)},
     () => { return squarePiece(spawner.x, spawner.y, "green", 1.5)},
-    () => { return SPiece(spawner.x, spawner.y, "green", 1.5)}
+    //() => { return SPiece(spawner.x, spawner.y, "green", 1.5)}
   ];
   return possibleBlocks[g.randomInt(0, possibleBlocks.length-1)]();
 }
