@@ -15,22 +15,26 @@ var engine = Engine.create({
       }
 });
 var runner = Runner.create();  
+
+var spawner = g.rectangle(100, 20, "white");
+spawner.pivotX = spawner.pivotY = 0.5;
+spawner.x = g.canvas.width/2;
+
+let possibleBlocks = [
+  () => { return linePiece(spawner.x, spawner.y, "green", 1.5)},
+  () => { return LPiece(spawner.x, spawner.y, "green", 1.5)},
+  () => { return squarePiece(spawner.x, spawner.y, "green", 1.5)},
+  () => { return SPiece(spawner.x, spawner.y, "green", 1.5)}
+];
 g.start();
 
 
 function setup() {
-  var platform = physicsSprite(g.canvas.width/2, g.canvas.height, 100, 120, "white", 0.5);
-  platform.body.isStatic = true;
-  console.log(platform.sprite.x);
+  var platform = createPlatform();
   physics.push(platform);
   World.add(engine.world, [platform.body]);
-  
-  var spawner = g.rectangle(100, 20, "white");
-  spawner.pivotX = spawner.pivotY = 0.5;
-  spawner.x = g.canvas.width/2;
-
   g.pointer.tap = function () {
-    var block = physicsSprite(spawner.x, spawner.y, 20, 20, "green", 0.5);
+    var block = possibleBlocks[g.randomInt(0, possibleBlocks.length-1)]();
     World.add(engine.world, [block.body]);
     physics.push(block);
   };
@@ -49,4 +53,5 @@ function play() {
   });
   
   Runner.tick(runner, engine, 1000/60);
+  
 }

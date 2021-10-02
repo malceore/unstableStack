@@ -17,11 +17,22 @@ Get 7 blocks stacked and the eighth can be made static.
 	Activated with shift?
 
 Todo:
-\- 1. Need a square and a button that spawns squares.
-\- 2. Physics for the squares to stack on the platform.
+\- Need a square and a button that spawns squares.
+\- Physics for the squares to stack on the platform.
+\- Next we'll need an object for creating
+\- Then we'll work on a few different tetris style pieces that inherit
 
+Fuck I'm stuck. MY pixi container is upper left pivot and Matterjs you
+cannot change that or it changes the weight dist also..
+Need to find a solution for this, fix physics so things stay together more, more stable.
 
-Next we'll need an object for creating
-Then we'll work on a few different tetris style pieces that inherit
 Finally we'll get some horiviontial and vertical movement of' current block
 	This will have to be done by moving the physics body.
+After that we'll want the camera to track the center of the blocks
+Next we'll make the choice menu that will give you two blocks to choose from.
+Then we'll get a score going for each block.
+Then we'll take blocks that are well off screen and make them static.
+Then a combo meter that lets you place a static block.
+Then we'll come back and polish the game, menu, clean up, new game, etc.
+Then we'll come back and add graphics, challenges, story and context.
+Don't forget about sound!
