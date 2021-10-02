@@ -3,13 +3,10 @@ const lineWidth = 1;
 const blockSize = 20;
 
 
-
 function physicsSprite(x, y, width, height, color, mass){
 
   let sprite = g.rectangle(width, height, color, "black", lineWidth, x, y);
   sprite.pivotX = sprite.pivotY = 0.5;
-  //sprite.offsetX = sprite.offsetY = 0;
-
   let body = Bodies.rectangle(x, y, width, height);
   body.mass = mass;
 
@@ -19,22 +16,22 @@ function physicsSprite(x, y, width, height, color, mass){
   };
 }
 
-function physicsSpriteVerts(x, y, verts, color, mass){
+function physicsSpriteVerts(x, y, verts, texture, color, mass){
 
   let body = Matter.Bodies.fromVertices(x, y, verts);
-  body.mass = mass;
-
+  //body.mass = mass;
+  body.mass = 0.2;
+  body.friction = 1;
+  body.frictionair = 0.8;
+  body.frictionStatic = 1;
+  /*
   // Correction for bodies here:
   /// https://github.com/liabru/matter-js/issues/211
-  /*
   body.position.x = body.bounds.min.x;
   body.position.y = body.bounds.min.y;
   body.positionPrev.x = body.bounds.min.x;
-  body.positionPrev.y = body.bounds.min.y;
-*/
+  body.positionPrev.y = body.bounds.min.y; 
  let sprite = g.rectangle(10, 10, "white");
- //sprite.offsetX = body.bounds.max.x - body.bounds.min.x / 2;
- //sprite.offsetY = body.bounds.max.y - body.bounds.min.y / 2;
  // Draw out the lines for each complex shape.
  verts.forEach(function(element, i){
    let line;
@@ -46,8 +43,10 @@ function physicsSpriteVerts(x, y, verts, color, mass){
    }
    sprite.addChild(line);
  });
-
- console.log(body.bounds.max.x - body.bounds.min.x / 2);
+ */
+  //let sprite = g.rectangle(10, 10, "white");
+  let sprite = g.sprite(texture);
+  sprite.setPivot(0.5, 0.5);
 
   return { 
     "body": body, 
@@ -66,6 +65,7 @@ function applyBlockSizes(verts){
 
 
 function linePiece(x, y, color, mass){
+  let sprite = "res/images/lineBlock.png";
   let verts = [
     {"x": 0, "y": 0},
     {"x": 1, "y": 0},
@@ -73,11 +73,12 @@ function linePiece(x, y, color, mass){
     {"x": 0, "y": 4}
   ];
   verts = applyBlockSizes(verts);
-  return physicsSpriteVerts(x, y, verts, color, mass);
+  return physicsSpriteVerts(x, y, verts, sprite, color, mass);
 }
 
 
 function squarePiece(x, y, color, mass){
+  let sprite = "res/images/squareBlock.png";
   let verts = [
     {"x": 0, "y": 0},
     {"x": 2, "y": 0},
@@ -85,26 +86,28 @@ function squarePiece(x, y, color, mass){
     {"x": 0, "y": 2}
   ];
   verts = applyBlockSizes(verts);
-  return physicsSpriteVerts(x, y, verts, color, mass);
+  return physicsSpriteVerts(x, y, verts, sprite, color, mass);
 }
 
 
 function LPiece(x, y, color, mass){
+  let sprite = "res/images/LBlock.png";
   let verts = [
     {"x": 0, "y": 0},
-    {"x": 1, "y": 0},
-    {"x": 1, "y": 2},
-    {"x": 2, "y": 2},
-    {"x": 2, "y": 3},
-    {"x": 2, "y": 3},
+    {"x": 2, "y": 0},
+    {"x": 2, "y": 1},
+    {"x": 1, "y": 1},
+    {"x": 1, "y": 3},
+    {"x": 0, "y": 3},
     {"x": 0, "y": 3}
   ];
   verts = applyBlockSizes(verts);
-  return physicsSpriteVerts(x, y, verts, color, mass);
+  return physicsSpriteVerts(x, y, verts, sprite, color, mass);
 }
 
 
 function SPiece(x, y, color, mass){
+  let sprite = "res/images/SBlock.png";
   let verts = [
     {"x": 0, "y": 0},
     {"x": 2, "y": 0},
@@ -116,7 +119,7 @@ function SPiece(x, y, color, mass){
     {"x": 0, "y": 1}
   ];
   verts = applyBlockSizes(verts);
-  return physicsSpriteVerts(x, y, verts, color, mass);
+  return physicsSpriteVerts(x, y, verts, sprite, color, mass);
 }
 
 

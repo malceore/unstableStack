@@ -1,3 +1,4 @@
+Notes:
 Theme: Unstable
 Make a Tricky Towers clone?
 Need to build as high as possible, generates a score?
@@ -15,6 +16,11 @@ physicsSprite(x, y, width, height, mass);
 Maybe make it control with mouse?
 Get 7 blocks stacked and the eighth can be made static.
 	Activated with shift?
+
+Dude checkout this pinball demo!
+https://codersblock.com/blog/javascript-physics-with-matter-js/
+
+
 
 Todo:
 \- Need a square and a button that spawns squares.
