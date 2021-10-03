@@ -1,5 +1,11 @@
 "use strict";
 
+function remove(container){
+  container.x += 5000;
+  g.remove(container);
+}
+
+
 function getRandomBlock(){
   let possibleBlocks = [
     () => { return linePiece(spawner.x, spawner.y, "green", 1.5)},

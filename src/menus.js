@@ -1,6 +1,6 @@
 "use strict";
 
-const menuColor = "white";
+const menuColor = "lightgrey";
 const menuLineWidth = 1;
 
 function choiceMenu(){
@@ -25,12 +25,14 @@ function createSelectMenu(char){
   menu.addChild(leftText);
   menu.previewBlock = getRandomBlock();
   var leftSprite = g.sprite(menu.previewBlock.sprite.texture);
-  leftSprite.scale.x = leftSprite.scale.y = 0.5;
+  leftSprite.scaleX = leftSprite.scaleY = 0.5;
   leftSprite.x = 25;
   leftSprite.y = 5;
   menu.addChild(leftSprite);
 
   menu.generateNextBlock = () => {
+    //shake = (sprite, magnitude = 16, angular = false)
+    g.shake(leftSprite, 8);
     // First we push the preview into active.
     var previewBlock = menu.previewBlock;
     currentBlock = previewBlock;
@@ -62,7 +64,6 @@ function helpMenu(){
   and down the tower.
   * When the bar is filled you can make any 
   block stick where you want using space.
-
   `;
   var menu = g.rectangle(350, 200, menuColor, "black", menuLineWidth, 0, 0);
   var text = g.text(helpText, "18px puzzler", "black");
@@ -72,6 +73,7 @@ function helpMenu(){
   var tag = g.rectangle(42, 25, menuColor, "black", menuLineWidth, 0, menu.height);
   tag.interact = true;
   tag.tap = () => {
+    soundEffects.blip3.play();
     if(container.hidden){
       g.slide(container, container.x-150, 0, 60);
       container.hidden = false;
@@ -86,6 +88,7 @@ function helpMenu(){
   help.x = 3;
   tag.addChild(help);
 
+  container.tag = tag;
   container.addChild(menu);
   container.addChild(tag);
   return container;
@@ -98,7 +101,13 @@ function createScore(){
   text.y = 25;
   text.update = () => {
     //text.text = "Score " + Math.max((stackedBlocks.length - 1) * 100, 0);
+    g.shake(text, 8);
     var baseScore = Math.abs(towerCenter.y - platform.sprite.y);
+    text.text = "Score " + Math.max(baseScore * 10, 0);
+  }
+  text.reset = () => {
+    //text.text = "Score " + Math.max((stackedBlocks.length - 1) * 100, 0);
+    var baseScore = 0;
     text.text = "Score " + Math.max(baseScore * 10, 0);
   }
   return text;
@@ -148,8 +157,7 @@ function winnerMenu(){
   menu.addChild(menuText);
 
   var close = g.rectangle(50, 30, menuColor, "black", 10, 0, 0);
-  // Later this will be return to menu!
-  var closeText = g.text("Close", "28px puzzler", "black");
+  var closeText = g.text("Next Level", "28px puzzler", "black");
   close.addChild(closeText);
   close.setPivot(0.5);
   close.x = 100;
@@ -157,10 +165,11 @@ function winnerMenu(){
 
   closeText.interact = true;
   closeText.tap = () => {
-    container.x += 5000;
-    close.interact = false;
-    g.remove(container);
-    //g.resume();
+    soundEffects.blip3.play();
+    remove(container);
+    cleanUpLevel();
+    currentLevel++;
+    loadLevel(levels[currentLevel]);
   }
 
   var finalScore = g.text("Final " + score.text, "28px puzzler", "black");

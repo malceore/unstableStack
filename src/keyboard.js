@@ -1,6 +1,6 @@
 function initKeyboard(){
   const blockSpeed = 1.5;
-  const cameraSpeed = 25;
+  const cameraSpeed = 100; //25;
   let leftArrow = g.keyboard(65),
       upArrow = g.keyboard(87),
       rightArrow = g.keyboard(68),
@@ -19,6 +19,7 @@ function initKeyboard(){
   // Combo power button.
   useStatic.press = () => {
     if (staticChargeBar.staticCurrent >= staticChargeBar.staticThreshold) {
+      soundEffects.usedStatic2.play();
       currentBlock.body.isStatic = true;
       g.pulse(currentBlock.sprite);
       staticChargeBar.reset();
@@ -29,11 +30,13 @@ function initKeyboard(){
   // Block spawning controls.
   spawnRight.press = () => {
     if (!spawnLeft.isDown) {
+      soundEffects.blip1.play();
       choiceMenu.rightMenu.generateNextBlock();
     }
   };
   spawnLeft.press = () => {
     if (!spawnRight.isDown) {
+      soundEffects.blip1.play();
       choiceMenu.leftMenu.generateNextBlock();
     }
   };
@@ -49,6 +52,8 @@ function initKeyboard(){
         };
         Matter.Body.setPosition(element.body, newXY);
       });
+      //Update background aswell now.
+      background.y += cameraSpeed/2;
     }
   };
   cameraDown.press = () => {
@@ -60,6 +65,7 @@ function initKeyboard(){
         };
         Matter.Body.setPosition(element.body, newXY);
       });
+      background.y -= cameraSpeed/2;
     }
   };
 

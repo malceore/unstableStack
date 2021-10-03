@@ -1,6 +1,17 @@
 "use strict";
 const lineWidth = 1;
 const blockSize = 20;
+const colors = [
+  "0x173F5F",
+  "0x20639B",
+  "0x3CAEC3",
+  "0xF6D55C",
+  "0xED553B",
+  "0x01FF70",
+  "0xB10DC9",
+  "0x3D9970",
+  "0x7FDBFF"
+];
 
 
 function physicsSprite(x, y, width, height, color, mass){
@@ -20,17 +31,19 @@ function physicsSpriteVerts(x, y, verts, texture, color, mass){
 
   let body = Matter.Bodies.fromVertices(x, y, verts);
   //body.mass = mass;
-  body.mass = 0.9;
-  body.friction = 1;
-  body.frictionair = 0.8;
-  body.frictionStatic = 1;
+  // body.mass = 9.9;
+  body.friction = 0.7;
+  //body.frictionair = 2;
+  body.frictionStatic = 5;
+  body.restitution=0;
+  body.slop = 0.9;
 
   var polys = new Array();
   verts.forEach(function(element, i){
     polys.push(element.x, element.y);
   });
   var ge = new PIXI.Graphics();
-  ge.beginFill("white");
+  ge.beginFill(colors[g.randomInt(0, colors.length-1)]);
   ge.drawPolygon(polys);
   ge.endFill();
 
@@ -119,8 +132,13 @@ function SPiece(x, y, color, mass){
 
 
 function createPlatform(){
-  var platform = physicsSprite(g.canvas.width/2, g.canvas.height, 5*blockSize, 6*blockSize, "white", 50.5);
+  var platform = physicsSprite(g.canvas.width/2, g.canvas.height, 5*blockSize, 6*blockSize, 0xd3dbde, 50.5);
+/*  platform.body.density = 15.9;
+  platform.body.friction = 10;
+  platform.body.frictionStatic = 10;
+  platform.body.slop = 0;*/
   platform.body.isStatic = true;
+  platform.name = "platform"
   return platform;
 }
 

@@ -47,33 +47,57 @@ do we have time to make 3 levels for this?
 
 How could we make it shake when you drop things?
 
+Can we make it so the level gives us
+1. Level name in upper right
+2. Changes help text.
+3. Changes the blocks avaliable.
+
+Something to come back and study:
+https://code.tutsplus.com/tutorials/getting-started-with-matterjs-introduction--cms-28784
+
 
 Todo:
 \- Need a square and a button that spawns squares.
 \- Physics for the squares to stack on the platform.
 \- Next we'll need an object for creating
 \- Then we'll work on a few different tetris style pieces that inherit
-
-Fuck I'm stuck. MY pixi container is upper left pivot and Matterjs you
-cannot change that or it changes the weight dist also..
-Need to find a solution for this, fix physics so things stay together more, more stable.
-
+	Fuck I'm stuck. MY pixi container is upper left pivot and Matterjs you
+		cannot change that or it changes the weight dist also..
+	Need to find a solution for this, fix physics so things stay together more, more stable.
 \- Finally we'll get some horiviontial and vertical movement of' current block
 	This will have to be done by moving the physics body.
-Need to get better stacking first.
-After that we'll want the camera to track the center of the blocks
-	To do this we'll first determine where the center of the tower is.
-		We'll need a list of active blocks then, those that have not fallen off.
-	Active blocks are touching the platform OR another block that is touching the platform.
-
+	Need to get better stacking first.
+	After that we'll want the camera to track the center of the blocks
+		To do this we'll first determine where the center of the tower is.
+			We'll need a list of active blocks then, those that have not fallen off.
+		Active blocks are touching the platform OR another block that is touching the platform.
 \- Next we'll make the choice menu that will give you two blocks to choose from.
 \- Then we'll get a score going for each block.
 \- Then we'll take blocks that are well off screen and make them static.
 \- Then a combo meter that lets you place a static block.
 \- Need to make it so you can gain and lose points towards static next.
-Then we need to make it so you get points for static objects as well.
+\-Then we need to make it so you get points for static objects as well.
 	Refactor it so the initla loop checks all 'static' bodies, not just platform.
-Then let's add a main menu that we can easily disable for troubleshooting.
+\- Need to make it so we can wrap everything and make into multiple levels. Also include a main menu.
+	\-Main menu
+	\- We'll also want to have the menu popup on the first level.
+	\- Okay now stuck on the clean up, how do we purge everything?
+\- Sound 
+\- Hexi Animations
+\- Reset camera with each level.
 
+\- Art for title 
+\- Art for BG.
+
+Gameplay refinements.
+	\- Get better physics
+	Github repo and sign into newgrounds.
+	power up ready noise, bar breathes?
+	Can we make it so the level gives us
+		1. Level name in upper right
+		2. Changes help text.
+		3. Changes the blocks avaliable.
+	Obstacles per level?
+	Add circle and triangle blocks.
 
 

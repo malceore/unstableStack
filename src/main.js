@@ -3,9 +3,21 @@ const resources = [
   "res/images/LBlock.png",
   "res/images/lineBlock.png",
   "res/images/SBlock.png",
-  "res/images/squareBlock.png"
+  "res/images/squareBlock.png",
+  "res/images/unstableStackTitle.png",
+  "res/images/unstableStackBG.png",
+  "res/sounds/blip.wav",
+  "res/sounds/blip2.wav",
+  "res/sounds/blip3.wav",
+  "res/sounds/thud.wav",
+  "res/sounds/thud_2.wav",
+  "res/sounds/thud_3.wav",
+  "res/sounds/explosion.wav",
+  "res/sounds/explosion2.wav",
+  "res/sounds/usedStatic.wav",
+  "res/sounds/usedStatic2.wav"
 ];
-var g = hexi(500, 520, setup, resources, load);
+var g = hexi(500, 520, mainMenu, resources, load);
 g.scaleToWindow();
 g.backgroundColor = 'grey';
 // globals
@@ -16,18 +28,23 @@ var Engine = Matter.Engine,
     Runner = Matter.Runner;
 var engine = Engine.create({render: { element: document.body,controller: Matter.RenderPixi}});
 var runner = Runner.create();  
+// Needs to be above adn thus behind platform.
+var background = g.sprite("res/images/unstableStackBG.png");
 var spawner = createSpawner();
 var platform = createPlatform();
-var staticChargeBar = createStaticChargeBar();
+var staticChargeBar;
 var towerCenter = {'x':0, 'y':0};
 var towerCenterLine = g.line("blue", 2, 0, -platform.sprite.height/2, g.canvas.width, -platform.sprite.height/2);
 var goalLine = g.line("red", 2, 0, -400, g.canvas.width, -400);
-
 var choiceMenu;
-var blockDampening = 6;
+var helpMenu;
+var blockDampening = 8;
 let stackedBlocks = new Array();
-var score = createScore();
+var score;
 var currentBlock = {};
+var currentLevel = 0;
+let soundEffects;
+
 g.start();
 
 function load() {
@@ -36,20 +53,87 @@ function load() {
   g.loadingBar();
 }
 
+function mainMenu(){
+  // Need to relocate this somewhere better.
+  loadSounds();
+  background.y -= (background.height - g.canvas.height) - 500;
+  var title = g.sprite("res/images/unstableStackTitle.png");
+  title.scaleX = title.scaleY = 0.8;
+  const play = g.rectangle(80, 50, menuColor, "black", menuLineWidth, 0, 0);
+  var playText = g.text("Play", "18px puzzler", "black");
+  playText.y = 12;
+  playText.x = 20;
+  play.addChild(playText);
+  play.y = 100;
+  play.interact = true;
+  play.tap = () => {
+    soundEffects.blip3.play();
+    remove(container);
+    loadLevel(levels[currentLevel]);
+  }
+
+  const credit = g.rectangle(80, 50, menuColor, "black", menuLineWidth, 0, 0);
+  var creditText = g.text("Credits", "18px puzzler", "black");
+  creditText.y = 10;
+  creditText.x = 10;
+  credit.addChild(creditText);
+  credit.y = 200;
+
+  var container = g.group(title, play, credit);
+  g.stage.putCenter(container);
+}
+
+function loadLevel(level){
+  if (level.id == 1){
+    setup()
+    //console.log(helpMenu.tag)
+    helpMenu.tag.tap();
+  } else {
+    cleanUpLevel();
+  }
+  goalLine.ay = goalLine.by = level.winConditionHeight;
+  g.resume();
+  g.state = play;
+}
+
+
 function setup() {
+  staticChargeBar = createStaticChargeBar();
+  score = createScore();
   towerCenterLine.x -= platform.sprite.x - (platform.sprite.width/2);
   platform.sprite.addChild(towerCenterLine);
   goalLine.x -= platform.sprite.x - (platform.sprite.width/2);
   goalLine.alpha = towerCenterLine.alpha = 0.2;
   platform.sprite.addChild(goalLine);
   physics.push(platform);
+
   World.add(engine.world, [platform.body]);
   engine.world.gravity.y = 0.09;
+  engine.positionIterations = 10;
+  engine.velocityIterations = 10;
+  runner.delta = 100/30;
+  //https://github.com/liabru/matter-js/issues/613 Stupid bug make my game bad.
+
   choiceMenu = choiceMenu();
   initKeyboard();
-  helpMenu();
-  //winnerMenu();
-  g.state = play;
+  helpMenu = helpMenu();
+}
+
+
+function loadSounds(){
+  soundEffects = {
+    blip1: g.sound("res/sounds/blip.wav"),
+    blip2: g.sound("res/sounds/blip2.wav"),
+    blip3: g.sound("res/sounds/blip3.wav"),
+    thud: g.sound("res/sounds/thud.wav"),
+    thud2: g.sound("res/sounds/thud_2.wav"),
+    thud3: g.sound("res/sounds/thud_3.wav"),
+    explosions: g.sound("res/sounds/explosion.wav"),
+    explosions2: g.sound("res/sounds/explosion2.wav"),
+    usedStatic: g.sound("res/sounds/usedStatic.wav"),
+    usedStatic2: g.sound("res/sounds/usedStatic2.wav")
+  };
+  soundEffects.explosions2.volume = 0.5;
 }
 
 
@@ -64,8 +148,9 @@ function updateStackedBlocks(){
       blocks.push(element);
     }
   });
-/*
-  // Is it colliding with something static?
+
+
+  /* Trying to make staticed blocks count towards stack, will return to this.
   physics.forEach(function (element, value) {
     physics.forEach(function (staticElement, staticValue) {
       if(staticElement.body.isStatic){
@@ -132,14 +217,17 @@ function pruneDisqualifiedBlocks(){
   // If physics object has fallen too far below then we'll stop updating it.
   physics.forEach(function (element, value) {
     // Need to skip index #1 which is platform otherwise everything will be off.
-    if (element.sprite.y > platform.sprite.y + 1500 && value != 0){
+    if (element.sprite.y > platform.sprite.y + 500 && value != 0){
+      soundEffects.explosions2.play();
+      staticChargeBar.remove();
       World.remove(engine.world, [element.body]);
+      g.remove(element.sprite);
       purgeList.push(element);
     }
-     // If blocks fell of let's sour the combo.
+     /* If blocks fell of let's sour the combo.
     if (element.sprite.y > platform.sprite.y + 100 && value != 0){
       staticChargeBar.remove();
-    }
+    }*/
   });
   physics = removeArrayElements(purgeList, physics);
 }
