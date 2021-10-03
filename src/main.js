@@ -6,6 +6,7 @@ const resources = [
   "res/images/squareBlock.png",
   "res/images/unstableStackTitle.png",
   "res/images/unstableStackBG.png",
+  "res/images/creditsMonster.png",
   "res/sounds/blip.wav",
   "res/sounds/blip2.wav",
   "res/sounds/blip3.wav",
@@ -38,13 +39,12 @@ var towerCenterLine = g.line("blue", 2, 0, -platform.sprite.height/2, g.canvas.w
 var goalLine = g.line("red", 2, 0, -400, g.canvas.width, -400);
 var choiceMenu;
 var helpMenu;
-var blockDampening = 8;
+var blockDampening = 10;
 let stackedBlocks = new Array();
 var score;
 var currentBlock = {};
 var currentLevel = 0;
 let soundEffects;
-
 g.start();
 
 function load() {
@@ -56,9 +56,10 @@ function load() {
 function mainMenu(){
   // Need to relocate this somewhere better.
   loadSounds();
-  background.y -= (background.height - g.canvas.height) - 500;
+  background.y = -((background.height - g.canvas.height) - 500);
   var title = g.sprite("res/images/unstableStackTitle.png");
   title.scaleX = title.scaleY = 0.8;
+  g.shake(title);
   const play = g.rectangle(80, 50, menuColor, "black", menuLineWidth, 0, 0);
   var playText = g.text("Play", "18px puzzler", "black");
   playText.y = 12;
@@ -72,25 +73,42 @@ function mainMenu(){
     loadLevel(levels[currentLevel]);
   }
 
+  var monster = g.sprite("res/images/creditsMonster.png");
+  monster.scaleX = monster.scaleY = 0.6;
+  monster.x = g.canvas.width;
+  monster.y = g.canvas.height * 0.6;
+
   const credit = g.rectangle(80, 50, menuColor, "black", menuLineWidth, 0, 0);
   var creditText = g.text("Credits", "18px puzzler", "black");
   creditText.y = 10;
   creditText.x = 10;
   credit.addChild(creditText);
   credit.y = 200;
+  credit.interact = true;
+  credit.tap = () => {
+    soundEffects.blip3.play();
+    g.slide(monster, monster.x-300, monster.y);
+  }
 
   var container = g.group(title, play, credit);
   g.stage.putCenter(container);
 }
 
 function loadLevel(level){
+  // Run first time setup or run cleanup. Easy.
   if (level.id == 1){
     setup()
-    //console.log(helpMenu.tag)
-    helpMenu.tag.tap();
   } else {
     cleanUpLevel();
   }
+
+  // Update help per level.
+  if (level.help){
+    console.log(helpMenu);
+    helpMenu.text.text = level.help;
+    helpMenu.tag.tap();
+  }
+
   goalLine.ay = goalLine.by = level.winConditionHeight;
   g.resume();
   g.state = play;
@@ -99,6 +117,7 @@ function loadLevel(level){
 
 function setup() {
   staticChargeBar = createStaticChargeBar();
+  resetButton();
   score = createScore();
   towerCenterLine.x -= platform.sprite.x - (platform.sprite.width/2);
   platform.sprite.addChild(towerCenterLine);
@@ -111,8 +130,8 @@ function setup() {
   engine.world.gravity.y = 0.09;
   engine.positionIterations = 10;
   engine.velocityIterations = 10;
+  //engine.enableSleeping = true;
   runner.delta = 100/30;
-  //https://github.com/liabru/matter-js/issues/613 Stupid bug make my game bad.
 
   choiceMenu = choiceMenu();
   initKeyboard();
@@ -148,21 +167,6 @@ function updateStackedBlocks(){
       blocks.push(element);
     }
   });
-
-
-  /* Trying to make staticed blocks count towards stack, will return to this.
-  physics.forEach(function (element, value) {
-    physics.forEach(function (staticElement, staticValue) {
-      if(staticElement.body.isStatic){
-        if (value != 0 && value != staticValue){
-          if(Matter.SAT.collides(element.body, staticElement.body).collided){
-            blocks.push(element);
-            //console.log("made it");
-          }
-        }
-      }
-    });
-  });*/
 
   physics.forEach(function (element, value) {
     // Need to skip index #1 which is platform otherwise everything will be off.
@@ -224,10 +228,6 @@ function pruneDisqualifiedBlocks(){
       g.remove(element.sprite);
       purgeList.push(element);
     }
-     /* If blocks fell of let's sour the combo.
-    if (element.sprite.y > platform.sprite.y + 100 && value != 0){
-      staticChargeBar.remove();
-    }*/
   });
   physics = removeArrayElements(purgeList, physics);
 }
@@ -243,7 +243,7 @@ function updatePhysicsSprites(){
 
     // Apply dampening to make very bottom blocks static.
     if(stackedBlocks.length >= blockDampening && (stackedBlocks.length - blockDampening) > value){
-      body.isStatic = true;
+      Matter.Body.setStatic(body, true); 
     }
   });
 }
@@ -253,8 +253,9 @@ function checkWinConditions(){
   stackedBlocks.forEach(function(element) {
     //console.log(element.sprite.y, goalLine.ay + platform.sprite.y);
     // Off set from platform needs to be applied and sprite's height to be accurate.
-    if (element.sprite.y - (element.sprite.height/2) <= goalLine.ay + platform.sprite.y){
-      //console.log("you are winrar!");
+    let spritePosition = element.sprite.y - (element.sprite.height/2);
+    if (spritePosition <= goalLine.ay + platform.sprite.y){
+      console.log(spritePosition);
       winnerMenu();
       g.pause();
     }

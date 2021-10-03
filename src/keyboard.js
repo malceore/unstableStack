@@ -20,8 +20,8 @@ function initKeyboard(){
   useStatic.press = () => {
     if (staticChargeBar.staticCurrent >= staticChargeBar.staticThreshold) {
       soundEffects.usedStatic2.play();
-      currentBlock.body.isStatic = true;
-      g.pulse(currentBlock.sprite);
+      Matter.Body.setStatic(currentBlock.body, true);
+      g.pulse(currentBlock.sprite, 60, 0.3);
       staticChargeBar.reset();
     }
   };

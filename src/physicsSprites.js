@@ -48,7 +48,6 @@ function physicsSpriteVerts(x, y, verts, texture, color, mass){
   ge.endFill();
 
   let sprite = g.sprite(texture);
-
   sprite.addChild(ge);
   ge.x -= sprite.width/2;
   ge.y -= sprite.height/2;
@@ -133,11 +132,7 @@ function SPiece(x, y, color, mass){
 
 function createPlatform(){
   var platform = physicsSprite(g.canvas.width/2, g.canvas.height, 5*blockSize, 6*blockSize, 0xd3dbde, 50.5);
-/*  platform.body.density = 15.9;
-  platform.body.friction = 10;
-  platform.body.frictionStatic = 10;
-  platform.body.slop = 0;*/
-  platform.body.isStatic = true;
+  Matter.Body.setStatic(platform.body, true);
   platform.name = "platform"
   return platform;
 }

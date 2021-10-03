@@ -55,31 +55,29 @@ function helpMenu(){
 
   const helpText = `
   How to:
-  * Stack blocks to reach the red line and 
+  * Stack blocks to reach the RED line and 
   you win! 
-  * C and V let you select your next block.
+  * C and V let you spawn your next block.
   * WASD let you right current block.
-  * QE to rotate current block.
-  * Arrow keys let you move the camera up 
-  and down the tower.
-  * When the bar is filled you can make any 
-  block stick where you want using space.
-  `;
+  * QE to rotate current block.`;
   var menu = g.rectangle(350, 200, menuColor, "black", menuLineWidth, 0, 0);
   var text = g.text(helpText, "18px puzzler", "black");
   text.y = -21;
   menu.addChild(text);
 
-  var tag = g.rectangle(42, 25, menuColor, "black", menuLineWidth, 0, menu.height);
+  var tag = g.rectangle(45, 25, menuColor, "black", menuLineWidth, 0, menu.height);
   tag.interact = true;
   tag.tap = () => {
     soundEffects.blip3.play();
     if(container.hidden){
       g.slide(container, container.x-150, 0, 60);
       container.hidden = false;
+      help.text = "Close";
     }else{
       g.slide(container, container.x+150, -200, 60);
       container.hidden = true;
+      help.text = "Help";
+
     }
   }
 
@@ -89,6 +87,7 @@ function helpMenu(){
   tag.addChild(help);
 
   container.tag = tag;
+  container.text = text;
   container.addChild(menu);
   container.addChild(tag);
   return container;
@@ -116,7 +115,7 @@ function createScore(){
 
 function createStaticChargeBar(){
   var barBackground = g.rectangle(160, 20, menuColor, "black", menuLineWidth, 0, 0);
-  var barFill = g.rectangle(20, 20, "lightgrey", "black", menuLineWidth, 0, 0);
+  var barFill = g.rectangle(20, 20, "grey", "black", menuLineWidth, 0, 0);
   const container = g.group(barBackground, barFill);
   container.barFill = barFill;
   container.x = 2;
@@ -131,6 +130,10 @@ function createStaticChargeBar(){
     if (container.staticThreshold > container.staticCurrent){
       container.staticCurrent++;
       container.update();
+    }
+    // If full
+    if(container.staticThreshold == container.staticCurrent){
+      soundEffects.usedStatic.play();
     }
   }
   container.remove = () => {
@@ -177,5 +180,18 @@ function winnerMenu(){
   finalScore.y = 80;
 
   var container = g.group(menu, close, finalScore);
+  g.breathe(menuText);
+  g.pulse(closeText);
   g.stage.putCenter(container);
+}
+
+function resetButton(){ 
+  var reset = g.rectangle(45, 25, menuColor, "black", menuLineWidth, (g.canvas.width/2 + 125), 0);
+  var resetText = g.text("Reset", "18px puzzler", "black");
+  resetText.x = 2;
+  reset.addChild(resetText);
+  reset.interact = true;
+  reset.tap = () => {
+    cleanUpLevel();
+  }
 }

@@ -91,13 +91,16 @@ Todo:
 
 Gameplay refinements.
 	\- Get better physics
-	Github repo and sign into newgrounds.
-	power up ready noise, bar breathes?
+	\- Github repo and 
+	sign into newgrounds.
+	\-power up ready noise, bar breathes?
 	Can we make it so the level gives us
 		1. Level name in upper right
-		2. Changes help text.
+		\- 2. Changes help text.
 		3. Changes the blocks avaliable.
 	Obstacles per level?
 	Add circle and triangle blocks.
+	Credits monster!
+	Reset button.
 
 
