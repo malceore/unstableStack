@@ -51,6 +51,10 @@ function load() {
   console.log(`loading: ${g.loadingFile}`);
   console.log(`progress: ${g.loadingProgress}`);
   g.loadingBar();
+  window.onload = function() {
+     g.canvas.focus();
+     console.log("focused");
+  }
 }
 
 function mainMenu(){
@@ -70,6 +74,7 @@ function mainMenu(){
   play.tap = () => {
     soundEffects.blip3.play();
     remove(container);
+    remove(monster);
     loadLevel(levels[currentLevel]);
   }
 
