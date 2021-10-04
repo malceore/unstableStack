@@ -51,10 +51,11 @@ function load() {
   console.log(`loading: ${g.loadingFile}`);
   console.log(`progress: ${g.loadingProgress}`);
   g.loadingBar();
-  window.onload = function() {
-     g.canvas.focus();
-     console.log("focused");
-  }
+  document.addEventListener('keydown', logKey);
+}
+
+function logKey(e) {
+  console.log(e.code);
 }
 
 function mainMenu(){
