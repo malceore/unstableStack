@@ -51,12 +51,9 @@ function load() {
   console.log(`loading: ${g.loadingFile}`);
   console.log(`progress: ${g.loadingProgress}`);
   g.loadingBar();
-  document.addEventListener('keydown', logKey);
+  document.getElementsByTagName("canvas")[0].focus();
 }
 
-function logKey(e) {
-  console.log(e.code);
-}
 
 function mainMenu(){
   // Need to relocate this somewhere better.
