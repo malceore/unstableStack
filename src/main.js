@@ -51,11 +51,16 @@ function load() {
   console.log(`loading: ${g.loadingFile}`);
   console.log(`progress: ${g.loadingProgress}`);
   g.loadingBar();
-  document.getElementsByTagName("canvas")[0].focus();
 }
 
+function preventUseOfDefaultKeys(event) {
+    if (event.keyCode == 86 || event.keyCode == 67) {
+        event.preventDefault();
+    }
+}
 
 function mainMenu(){
+  window.focus();
   // Need to relocate this somewhere better.
   loadSounds();
   background.y = -((background.height - g.canvas.height) - 500);
